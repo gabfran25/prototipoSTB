@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STB - Gestión de Inventario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">STB - Servicios Técnicos de Bombeo</div>
+        <ul class="nav-links">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="{{ url_for('inventario') }}" class="active">Inventario</a></li>
+            <li><a href="#">Registrar Venta</a></li>
+            <li><a href="#">Historial</a></li>
+            <li><a href="#">Pedidos</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <h1>Control de Inventario y Stock</h1>
+        
+        <section class="form-container">
+            <h2>Registrar Nuevo Producto</h2>
+            <form action="/inventario/agregar" method="POST" class="grid-form">
+                <input type="text" name="nombre" placeholder="Nombre de la bomba o equipo" required>
+                <input type="number" step="0.01" name="precio" placeholder="Precio ($)" required>
+                <input type="number" name="stock" placeholder="Stock Inicial" required>
+                <textarea name="descripcion" placeholder="Descripción técnica del equipo" rows="2"></textarea>
+                <button type="submit" class="btn-primary">Guardar Producto</button>
+            </form>
+        </section>
+
+        <section class="tabla-container">
+            <h2>Productos en Existencia</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Stock Actual</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.id_producto }}</td>
+                        <td><strong>{{ producto.nombre }}</strong></td>
+                        <td>{{ producto.descripcion }}</td>
+                        <td>${{ producto.precio }}</td>
+                        <td>{{ producto.stock }} uds</td>
+                        <td>
+                            <form action="/inventario/actualizar_stock" method="POST" class="inline-form">
+                                <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
+                                <input type="number" name="stock" value="{{ producto.stock }}" style="width: 70px;" required>
+                                <button type="submit" class="btn-secondary">Actualizar</button>
+                            </form>
+                            <form action="/inventario/eliminar/{{ producto.id_producto }}" method="POST" class="inline-form" onsubmit="return confirm('¿Seguro que deseas eliminar este producto del inventario?');">
+                    <button type="submit" class="btn-danger">Borrar</button>
+                </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</body>
+</html>

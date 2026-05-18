@@ -1,0 +1,167 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+.navbar {
+    background-color: #1e3a8a; /* Azul corporativo */
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: #cbd5e1;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: white;
+    border-bottom: 2px solid #38bdf8;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+h1 {
+    margin-bottom: 0.5rem;
+    color: #0f172a;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+th {
+    background-color: #0f172a;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+/* Estilos para Formularios */
+.form-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h2, .tabla-container h2 {
+    margin-bottom: 1rem;
+    color: #1e3a8a;
+    font-size: 1.25rem;
+}
+
+.grid-form {
+    display: grid;
+    grid-template-columns: 2f 1fr 1fr;
+    gap: 10px;
+}
+
+.grid-form input, .grid-form textarea {
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+}
+
+.grid-form textarea {
+    grid-column: span 3;
+}
+
+.btn-primary {
+    background-color: #10b981; /* Verde guardar */
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    grid-column: span 3;
+}
+
+.btn-primary:hover {
+    background-color: #059669;
+}
+
+/* Formulario en línea dentro de la tabla */
+.inline-form {
+    display: flex;
+    gap: 5px;
+}
+
+.inline-form input {
+    padding: 5px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.btn-secondary {
+    background-color: #3b82f6; /* Azul actualizar */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-secondary:hover {
+    background-color: #2563eb;
+}
+
+/* Contenedor para alinear los botones de la tabla */
+.acciones-tabla {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Botón rojo de eliminación */
+.btn-danger {
+    background-color: #ef4444; /* Rojo */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}

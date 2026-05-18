@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STB - Sistema de Gestión</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">STB - Servicios Técnicos de Bombeo</div>
+        <ul class="nav-links">
+            <li><a href="/" class="active">Inicio</a></li>
+            <li><a href="{{ url_for('inventario') }}">Inventario</a></li>
+            <li><a href="#">Registrar Venta</a></li>
+            <li><a href="#">Historial</a></li>
+            <li><a href="#">Pedidos</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <h1>Dashboard Principal</h1>
+        <p>Bienvenido al prototipo de gestión de STB. Desde aquí puedes monitorear el estado actual del negocio.</p>
+
+        <section class="resumen-stock">
+            <h2>Vista Rápida de Inventario Actual</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Stock Actual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.id_producto }}</td>
+                        <td>{{ producto.nombre }}</td>
+                        <td>${{ producto.precio }}</td>
+                        <td><strong>{{ producto.stock }} unidades</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</body>
+</html>
