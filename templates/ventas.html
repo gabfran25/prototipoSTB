@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STB - Registrar Venta Múltiple</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">STB - Servicios Técnicos de Bombeo</div>
+        <ul class="nav-links">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="{{ url_for('inventario') }}">Inventario</a></li>
+            <li><a href="{{ url_for('ventas') }}" class="active">Registrar Venta</a></li>
+            <li><a href="{{ url_for('historial') }}">Historial</a></li>
+            <li><a href="{{ url_for('pedidos') }}">Pedidos</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <h1>Generar Nueva Venta Múltiple</h1>
+        <p>Selecciona uno o varios productos, define las cantidades y los datos de entrega para el cliente.</p>
+
+        <section class="form-container">
+            <h2>Detalles de la Transacción</h2>
+            <form action="/registrar_venta/guardar" method="POST">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div>
+                        <label style="font-weight: bold; display:block; margin-bottom: 5px;">Nombre del Cliente:</label>
+                        <input type="text" name="nombre_cliente" placeholder="Nombre completo del cliente" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="font-weight: bold; display:block; margin-bottom: 5px;">Dirección de Entrega:</label>
+                        <input type="text" name="direccion" placeholder="Dirección completa de entrega" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
+
+                <label style="font-weight: bold; display:block; margin-bottom: 10px;">Artículos a Comprar:</label>
+                <div id="contenedor-productos">
+                    
+                    <div class="fila-producto" style="display: grid; grid-template-columns: 3fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center;">
+                        <select name="id_producto[]" required style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                            <option value="" disabled selected>-- Selecciona un equipo --</option>
+                            {% for producto in productos %}
+                                <option value="{{ producto.id_producto }}">
+                                    {{ producto.nombre }} - Precio: ${{ producto.precio }} (Stock: {{ producto.stock }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <input type="number" name="cantidad[]" placeholder="Cant." min="1" required style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                        <button type="button" class="btn-danger" onclick="eliminarFila(this)" style="padding: 10px; display: none;">X</button>
+                    </div>
+
+                </div>
+
+                <button type="button" class="btn-secondary" id="btn-añadir" style="margin-top: 5px; padding: 8px 15px; margin-bottom: 20px;">+ Añadir otro producto</button>
+
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
+                
+                <button type="submit" class="btn-primary" style="width: 100%;">Confirmar Venta Conjunta y Generar Pedido</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById('btn-añadir').addEventListener('click', function() {
+            // Seleccionamos la primera fila de producto para usarla como plantilla
+            const contenedor = document.getElementById('contenedor-productos');
+            const primeraFila = document.querySelector('.fila-producto');
+            
+            // Clonamos la fila (incluyendo select e input de cantidad vacíos)
+            const nuevaFila = primeraFila.cloneNode(true);
+            
+            // Limpiamos los valores seleccionados o escritos en el clon
+            nuevaFila.querySelector('select').selectedIndex = 0;
+            nuevaFila.querySelector('input').value = '';
+            
+            // Hacemos visible el botón de eliminar ("X") en la fila clonada
+            const botonEliminar = nuevaFila.querySelector('.btn-danger');
+            botonEliminar.style.display = 'block';
+            
+            // Añadimos la nueva fila al contenedor principal
+            contenedor.appendChild(nuevaFila);
+        });
+
+        function eliminarFila(boton) {
+            // Remueve por completo la fila contenedora del botón al que se le dio clic
+            boton.parentElement.remove();
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STB - Historial de Ventas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">STB - Servicios Técnicos de Bombeo</div>
+        <ul class="nav-links">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="{{ url_for('inventario') }}">Inventario</a></li>
+            <li><a href="{{ url_for('ventas') }}">Registrar Venta</a></li>
+            <li><a href="{{ url_for('historial') }}" class="active">Historial</a></li>
+            <li><a href="{{ url_for('pedidos') }}">Pedidos</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <h1>Historial y Registro de Ventas</h1>
+        <p>Consulte el registro histórico de todas las transacciones financieras y copias de facturación del sistema.</p>
+
+        <section class="tabla-container">
+            <h2>Ventas Consolidadas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Venta</th>
+                        <th>Fecha y Hora</th>
+                        <th>Cliente</th>
+                        <th>Producto Solicitado</th>
+                        <th>Cantidad</th>
+                        <th>Total Facturado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in historial_lista %}
+                    <tr>
+                        <td><strong>#{{ venta.id_venta }}</strong></td>
+                        <td>{{ venta.fecha }}</td>
+                        <td>{{ venta.cliente }}</td>
+                        <td>{{ venta.producto }}</td>
+                        <td>{{ venta.cantidad }} </td>
+                        <td style="color: #10b981; font-weight: bold;">${{ venta.total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</body>
+</html>

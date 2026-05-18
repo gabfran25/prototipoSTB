@@ -151,9 +151,47 @@ tr:nth-child(even) {
     align-items: center;
 }
 
-/* Botón rojo de eliminación */
 .btn-danger {
-    background-color: #ef4444; /* Rojo */
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+/* Etiquetas de Estado (Badges) */
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.badge-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.badge-dark {
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+/* Filas inactivas ligeramente opacas */
+.row-inactivo {
+    background-color: #f8fafc;
+    color: #94a3b8;
+}
+
+/* Botón Amarillo Desactivar */
+.btn-warning {
+    background-color: #f59e0b;
     color: white;
     border: none;
     padding: 5px 10px;
@@ -162,6 +200,21 @@ tr:nth-child(even) {
     font-size: 0.85rem;
 }
 
-.btn-danger:hover {
-    background-color: #dc2626;
+.btn-warning:hover {
+    background-color: #d97706;
+}
+
+/* Botón Verde Activar */
+.btn-success {
+    background-color: #10b981;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-success:hover {
+    background-color: #059669;
 }

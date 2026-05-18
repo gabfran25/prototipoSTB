@@ -13,34 +13,32 @@
         <ul class="nav-links">
             <li><a href="/" class="active">Inicio</a></li>
             <li><a href="{{ url_for('inventario') }}">Inventario</a></li>
-            <li><a href="#">Registrar Venta</a></li>
-            <li><a href="#">Historial</a></li>
-            <li><a href="#">Pedidos</a></li>
+            <li><a href="{{ url_for('ventas') }}">Registrar Venta</a></li>
+            <li><a href="{{ url_for('historial') }}">Historial</a></li>
+            <li><a href="{{ url_for('pedidos') }}">Pedidos</a></li>
         </ul>
     </nav>
 
     <main class="container">
         <h1>Dashboard Principal</h1>
         <p>Bienvenido al prototipo de gestión de STB. Desde aquí puedes monitorear el estado actual del negocio.</p>
-
+        <br>
         <section class="resumen-stock">
             <h2>Vista Rápida de Inventario Actual</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Producto</th>
-                        <th>Precio</th>
-                        <th>Stock Actual</th>
+                        <th><center>Precio</center></th>
+                        <th><center>Stock Actual</center></th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for producto in productos %}
                     <tr>
-                        <td>{{ producto.id_producto }}</td>
                         <td>{{ producto.nombre }}</td>
-                        <td>${{ producto.precio }}</td>
-                        <td><strong>{{ producto.stock }} unidades</strong></td>
+                        <td><center>${{ producto.precio }}</center></td>
+                        <td><center><strong>{{ producto.stock }}</strong></center></td>
                     </tr>
                     {% endfor %}
                 </tbody>

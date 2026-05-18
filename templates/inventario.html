@@ -13,9 +13,9 @@
         <ul class="nav-links">
             <li><a href="/">Inicio</a></li>
             <li><a href="{{ url_for('inventario') }}" class="active">Inventario</a></li>
-            <li><a href="#">Registrar Venta</a></li>
-            <li><a href="#">Historial</a></li>
-            <li><a href="#">Pedidos</a></li>
+            <li><a href="{{ url_for('ventas') }}">Registrar Venta</a></li>
+            <li><a href="{{ url_for('historial') }}">Historial</a></li>
+            <li><a href="{{ url_for('pedidos') }}">Pedidos</a></li>
         </ul>
     </nav>
 
@@ -43,26 +43,45 @@
                         <th>Descripción</th>
                         <th>Precio</th>
                         <th>Stock Actual</th>
+                        <th>Estado</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for producto in productos %}
-                    <tr>
+                    <tr class="{% if not producto.activo %}row-inactivo{% endif %}">
                         <td>{{ producto.id_producto }}</td>
                         <td><strong>{{ producto.nombre }}</strong></td>
                         <td>{{ producto.descripcion }}</td>
                         <td>${{ producto.precio }}</td>
                         <td>{{ producto.stock }} uds</td>
+                        
                         <td>
-                            <form action="/inventario/actualizar_stock" method="POST" class="inline-form">
-                                <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
-                                <input type="number" name="stock" value="{{ producto.stock }}" style="width: 70px;" required>
-                                <button type="submit" class="btn-secondary">Actualizar</button>
-                            </form>
-                            <form action="/inventario/eliminar/{{ producto.id_producto }}" method="POST" class="inline-form" onsubmit="return confirm('¿Seguro que deseas eliminar este producto del inventario?');">
-                    <button type="submit" class="btn-danger">Borrar</button>
-                </form>
+                            {% if producto.activo %}
+                                <span class="badge badge-success">Visible / Activo</span>
+                            {% else %}
+                                <span class="badge badge-dark">Oculto / Inactivo</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td>
+                            <div class="acciones-tabla">
+                                
+                                <form action="/inventario/actualizar_stock" method="POST" class="inline-form">
+                                    <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
+                                    <input type="number" name="stock" value="{{ producto.stock }}" style="width: 70px;" required>
+                                    <button type="submit" class="btn-secondary">Actualizar</button>
+                                </form>
+                                
+                                <form action="/inventario/cambiar_estado/{{ producto.id_producto }}" method="POST" class="inline-form">
+                                    {% if producto.activo %}
+                                        <button type="submit" class="btn-warning">Desactivar</button>
+                                    {% else %}
+                                        <button type="submit" class="btn-success">Activar</button>
+                                    {% endif %}
+                                </form>
+
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
