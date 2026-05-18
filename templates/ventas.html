@@ -27,14 +27,18 @@
             <h2>Detalles de la Transacción</h2>
             <form action="/registrar_venta/guardar" method="POST">
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                     <div>
                         <label style="font-weight: bold; display:block; margin-bottom: 5px;">Nombre del Cliente:</label>
-                        <input type="text" name="nombre_cliente" placeholder="Nombre completo del cliente" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                        <input type="text" name="nombre_cliente" placeholder="Nombre completo" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="font-weight: bold; display:block; margin-bottom: 5px;">Teléfono de Contacto:</label>
+                        <input type="tel" name="telefono" placeholder="(662) XXX-XXXX" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
                     </div>
                     <div>
                         <label style="font-weight: bold; display:block; margin-bottom: 5px;">Dirección de Entrega:</label>
-                        <input type="text" name="direccion" placeholder="Dirección completa de entrega" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                        <input type="text" name="direccion" placeholder="Dirección de entrega" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
                     </div>
                 </div>
 
@@ -69,27 +73,20 @@
 
     <script>
         document.getElementById('btn-añadir').addEventListener('click', function() {
-            // Seleccionamos la primera fila de producto para usarla como plantilla
             const contenedor = document.getElementById('contenedor-productos');
             const primeraFila = document.querySelector('.fila-producto');
-            
-            // Clonamos la fila (incluyendo select e input de cantidad vacíos)
             const nuevaFila = primeraFila.cloneNode(true);
             
-            // Limpiamos los valores seleccionados o escritos en el clon
             nuevaFila.querySelector('select').selectedIndex = 0;
             nuevaFila.querySelector('input').value = '';
             
-            // Hacemos visible el botón de eliminar ("X") en la fila clonada
             const botonEliminar = nuevaFila.querySelector('.btn-danger');
             botonEliminar.style.display = 'block';
             
-            // Añadimos la nueva fila al contenedor principal
             contenedor.appendChild(nuevaFila);
         });
 
         function eliminarFila(boton) {
-            // Remueve por completo la fila contenedora del botón al que se le dio clic
             boton.parentElement.remove();
         }
     </script>

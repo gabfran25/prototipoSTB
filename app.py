@@ -121,30 +121,26 @@ def ventas():
     conn.close()
     return render_template('ventas.html', productos=productos)
 
-# 7. ACCIÓN: Procesar la transacción de venta (SOPORTA MÚLTIPLES PRODUCTOS SIMULTÁNEOS)
+# 7. ACCIÓN: Procesar la transacción de venta (CORREGIDA)
 @app.route('/registrar_venta/guardar', methods=['POST'])
 def guardar_venta():
-    # Recorremos los datos usando getlist debido a los corchetes [] del formulario HTML
     lista_productos_ids = request.form.getlist('id_producto[]')
     lista_cantidades = request.form.getlist('cantidad[]')
     
     direccion = request.form['direccion']
     nombre_cliente = request.form['nombre_cliente']
+    telefono_cliente = request.form['telefono']
 
-    # Abrimos la conexión
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # --- FASE 1: VALIDACIÓN DE SEGURIDAD GENERAL Y CÁLCULO DEL TOTAL ---
     total_venta = 0.0
     datos_productos_procesados = []
 
-    # Iteramos sobre los arreglos en paralelo usando un índice
     for i in range(len(lista_productos_ids)):
         id_prod = lista_productos_ids[i]
         cant = int(lista_cantidades[i])
         
-        # Consultamos stock y precio de cada elemento seleccionado
         cursor.execute('SELECT precio, stock, nombre FROM Productos WHERE id_producto = ?', (id_prod,))
         item = cursor.fetchone()
         
@@ -157,7 +153,6 @@ def guardar_venta():
         stock_actual = int(item.stock)
         nombre_producto = item.nombre
 
-        # Rompemos el ciclo si algún producto supera las existencias físicas
         if cant > stock_actual:
             cursor.close()
             conn.close()
@@ -166,7 +161,6 @@ def guardar_venta():
         subtotal = precio_unitario * cant
         total_venta += subtotal
         
-        # Guardamos en una lista temporal los datos listos para no volver a consultar la BD después
         datos_productos_procesados.append({
             'id_producto': id_prod,
             'cantidad': cant,
@@ -174,7 +168,7 @@ def guardar_venta():
             'stock_actual': stock_actual
         })
 
-    # --- FASE 2: INSERCIÓN GENERAL MAESTRO (1 Sola Venta Compartida) ---
+    # --- FASE 2: INSERCIÓN MAESTRO ---
     cursor.execute('''
         INSERT INTO Ventas (fecha, total)
         OUTPUT Inserted.id_venta
@@ -182,31 +176,29 @@ def guardar_venta():
     ''', (total_venta,))
     id_venta = cursor.fetchone()[0]
 
-    # --- FASE 3: INSERCIÓN DEL DETALLE Y ACTUALIZACIÓN DE STOCK (Ciclo de Guardado) ---
+    # --- FASE 3: INSERCIÓN DEL DETALLE Y ACTUALIZACIÓN DE STOCK ---
     for item in datos_productos_procesados:
-        # A. Guardamos cada renglón del pedido ligado al mismo id_venta
         cursor.execute('''
             INSERT INTO DetalleVentas (id_venta, id_producto, cantidad, precio_unitario)
             VALUES (?, ?, ?, ?)
         ''', (id_venta, item['id_producto'], item['cantidad'], item['precio_unitario']))
 
-        # B. Restamos el inventario correspondiente de forma individual
         nuevo_stock = item['stock_actual'] - item['cantidad']
         nuevo_activo = 0 if nuevo_stock <= 0 else 1
 
+        # CORRECCIÓN AQUÍ: Cambiado 'id_producto' por 'item['id_producto']'
         cursor.execute('''
             UPDATE Productos
             SET stock = ?, activo = ?
             WHERE id_producto = ?
         ''', (nuevo_stock, nuevo_activo, item['id_producto']))
 
-    # --- FASE 4: CREACIÓN DEL PEDIDO LOGÍSTICO (1 Solo envío para toda la compra) ---
+    # --- FASE 4: CREACIÓN DEL PEDIDO LOGÍSTICO ---
     cursor.execute('''
-        INSERT INTO Pedidos (id_venta, estado, direccion_entrega, nombre, fecha_actualizacion)
-        VALUES (?, 'Pendiente', ?, ?, GETDATE())
-    ''', (id_venta, direccion, nombre_cliente))
+        INSERT INTO Pedidos (id_venta, estado, direccion_entrega, nombre, fecha_actualizacion, telefono)
+        VALUES (?, 'Pendiente', ?, ?, GETDATE(), ?)
+    ''', (id_venta, direccion, nombre_cliente, telefono_cliente))
 
-    # Guardamos definitivamente todos los movimientos en SQL Server
     conn.commit()
     cursor.close()
     conn.close()
@@ -218,7 +210,7 @@ def guardar_venta():
 def pedidos():
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Añadimos p.fecha_salida y p.fecha_entrega a la consulta SQL
+    # Agregamos p.telefono a la consulta de selección
     cursor.execute('''
         SELECT 
             p.id_pedido, 
@@ -229,7 +221,8 @@ def pedidos():
             p.direccion_entrega, 
             p.estado,
             p.fecha_salida,
-            p.fecha_entrega
+            p.fecha_entrega,
+            p.telefono
         FROM Pedidos p
         JOIN Ventas v ON p.id_venta = v.id_venta
         JOIN DetalleVentas dv ON v.id_venta = dv.id_venta
@@ -242,10 +235,67 @@ def pedidos():
     return render_template('pedidos.html', pedidos=pedidos_lista)
 
 
-# 9. ACCIÓN: Actualizar los datos del pedido (Campos de texto, selectores y fechas)
+# 9. ACCIÓN: Actualizar los datos del pedido (Limpia sin duplicados)
 @app.route('/pedidos/actualizar/<int:id_pedido>', methods=['POST'])
 def actualizar_pedido(id_pedido):
     nuevo_nombre = request.form['nombre']
+    nueva_direccion = request.form['direccion']
+    nuevo_estado = request.form['estado']
+    nuevo_telefono = request.form['telefono']
+    
+    f_salida = request.form['fecha_salida']
+    f_entrega = request.form['fecha_entrega']
+    
+    fecha_salida_db = f_salida if f_salida != "" else None
+    fecha_entrega_db = f_entrega if f_entrega != "" else None
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE Pedidos
+        SET nombre = ?, 
+            direccion_entrega = ?, 
+            estado = ?, 
+            fecha_salida = ?, 
+            fecha_entrega = ?, 
+            telefono = ?,
+            fecha_actualizacion = GETDATE()
+        WHERE id_pedido = ?
+    ''', (nuevo_nombre, nueva_direccion, nuevo_estado, fecha_salida_db, fecha_entrega_db, nuevo_telefono, id_pedido))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirect(url_for('pedidos'))
+    nuevo_nombre = request.form['nombre']
+    nueva_direccion = request.form['direccion']
+    nuevo_estado = request.form['estado']
+    nuevo_telefono = request.form['telefono']  # <-- Capturamos el teléfono enviado
+    
+    f_salida = request.form['fecha_salida']
+    f_entrega = request.form['fecha_entrega']
+    
+    fecha_salida_db = f_salida if f_salida != "" else None
+    fecha_entrega_db = f_entrega if f_entrega != "" else None
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    # Modificamos el UPDATE para incluir la columna telefono
+    cursor.execute('''
+        UPDATE Pedidos
+        SET nombre = ?, 
+            direccion_entrega = ?, 
+            estado = ?, 
+            fecha_salida = ?, 
+            fecha_entrega = ?, 
+            telefono = ?,
+            fecha_actualizacion = GETDATE()
+        WHERE id_pedido = ?
+    ''', (nuevo_nombre, nueva_direccion, nuevo_estado, fecha_salida_db, fecha_entrega_db, nuevo_telefono, id_pedido))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirect(url_for('pedidos'))
+    nuevo_nombre = request.form['nombre']  
     nueva_direccion = request.form['direccion']
     nuevo_estado = request.form['estado']
     

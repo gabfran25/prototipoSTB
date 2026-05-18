@@ -30,7 +30,7 @@
                     <tr>
                         <th>ID Pedido</th>
                         <th>Cliente</th>
-                        <th>Producto (Cant.)</th>
+                        <th>Teléfono</th> <th>Producto (Cant.)</th>
                         <th>Total Pago</th>
                         <th>Dirección de Entrega</th>
                         <th>Fecha Salida</th>
@@ -46,14 +46,18 @@
                             <td>#{{ pedido.id_pedido }}</td>
                             
                             <td>
-                                <input type="text" name="nombre" value="{{ pedido.cliente }}" required style="width: 130px; padding: 4px;">
+                                <input type="text" name="nombre" value="{{ pedido.cliente }}" required style="width: 110px; padding: 4px;">
+                            </td>
+                            
+                            <td>
+                                <input type="tel" name="telefono" value="{{ pedido.telefono if pedido.telefono else '' }}" required style="width: 110px; padding: 4px;">
                             </td>
                             
                             <td>{{ pedido.producto }} <strong>({{ pedido.cantidad }} uds)</strong></td>
                             <td>${{ pedido.total }}</td>
                             
                             <td>
-                                <input type="text" name="direccion" value="{{ pedido.direccion_entrega }}" required style="width: 160px; padding: 4px;">
+                                <input type="text" name="direccion" value="{{ pedido.direccion_entrega }}" required style="width: 140px; padding: 4px;">
                             </td>
 
                             <td>
